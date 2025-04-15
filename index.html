@@ -11,7 +11,7 @@
         <h1>Cricket Equipment Lists</h1>
         
         <!-- Create New List Form -->
-        <div class="card">
+        <div class="card no-print">
             <h2>Create New List</h2>
             <div class="form-group">
                 <label for="personName">Name:</label>
@@ -21,10 +21,10 @@
         </div>
         
         <!-- List Selection Tabs -->
-        <div id="listTabs" class="tabs-container"></div>
+        <div id="listTabs" class="tabs-container no-print"></div>
         
         <!-- Add Items Form -->
-        <div id="addItemForm" class="card hidden">
+        <div id="addItemForm" class="card hidden no-print">
             <h2 id="addItemHeader">Add New Item</h2>
             <div class="form-group">
                 <label for="itemName">Item Name:</label>
@@ -100,7 +100,7 @@
                             <th>Type</th>
                             <th>Size</th>
                             <th>Brand</th>
-                            <th>Action</th>
+                            <th class="no-print">Action</th>
                         </tr>
                     </thead>
                     <tbody id="itemsTableBody"></tbody>
@@ -112,27 +112,21 @@
             </div>
         </div>
         
-        <!-- Sharing Options -->
-        <div id="sharingOptions" class="card hidden">
-            <h2>Share List</h2>
-            <div class="button-group">
+        <!-- Export Options -->
+        <div id="exportOptions" class="card hidden no-print">
+            <h2>Export List</h2>
+            <div class="export-buttons">
                 <button id="viewListBtn" class="btn secondary-btn">View List</button>
-                <button id="showQRBtn" class="btn secondary-btn">Show QR Code</button>
-                <button id="downloadBtn" class="btn success-btn">Download List</button>
+                <button id="downloadTextBtn" class="btn success-btn">Download as Text</button>
+                <button id="downloadCSVBtn" class="btn success-btn">Download as CSV</button>
+                <button id="downloadJSONBtn" class="btn success-btn">Download as JSON</button>
+                <button id="printBtn" class="btn primary-btn">Print List</button>
             </div>
             
             <!-- Preview Section -->
             <div id="previewSection" class="preview-container">
                 <h3>Preview:</h3>
                 <pre id="listPreview"></pre>
-            </div>
-            
-            <!-- QR Code View -->
-            <div id="qrCodeView" class="sharing-view hidden">
-                <h3 id="qrCodeHeader">QR Code</h3>
-                <div id="qrCode" class="qr-code-container"></div>
-                <p class="note">This QR code contains the cricket equipment list.</p>
-                <p class="sub-note">Scan this code with your device's camera or QR code reader app.</p>
             </div>
             
             <!-- List View -->

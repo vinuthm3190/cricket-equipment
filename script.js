@@ -85,6 +85,47 @@ class EquipmentManager {
         
         return content;
     }
+    
+    generateCSV() {
+        const list = this.getActiveList();
+        if (!list || !list.items || list.items.length === 0) return '';
+        
+        // CSV header
+        let csv = 'Item Name,Quantity,Type,Size,Brand\n';
+        
+        // Add each item as a row
+        list.items.forEach(item => {
+            const row = [
+                `"${item.name}"`, // Quote to handle commas in names
+                item.quantity,
+                `"${item.category}"`,
+                `"${item.size || ''}"`,
+                `"${item.brand || ''}"`
+            ];
+            csv += row.join(',') + '\n';
+        });
+        
+        return csv;
+    }
+    
+    generateJSON() {
+        const list = this.getActiveList();
+        if (!list) return '';
+        
+        // Create a clean object with just the needed data
+        const exportData = {
+            name: list.name,
+            items: list.items.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+                category: item.category,
+                size: item.size || '',
+                brand: item.brand || ''
+            }))
+        };
+        
+        return JSON.stringify(exportData, null, 2); // Pretty print with 2-space indentation
+    }
 }
 
 // Controller: Managing UI and Events
@@ -123,16 +164,15 @@ class EquipmentController {
         this.totalItems = document.getElementById('totalItems');
         this.itemCount = document.getElementById('itemCount');
         
-        // Elements for sharing
-        this.sharingOptions = document.getElementById('sharingOptions');
+        // Elements for exporting
+        this.exportOptions = document.getElementById('exportOptions');
         this.viewListBtn = document.getElementById('viewListBtn');
-        this.showQRBtn = document.getElementById('showQRBtn');
-        this.downloadBtn = document.getElementById('downloadBtn');
+        this.downloadTextBtn = document.getElementById('downloadTextBtn');
+        this.downloadCSVBtn = document.getElementById('downloadCSVBtn');
+        this.downloadJSONBtn = document.getElementById('downloadJSONBtn');
+        this.printBtn = document.getElementById('printBtn');
         this.previewSection = document.getElementById('previewSection');
         this.listPreview = document.getElementById('listPreview');
-        this.qrCodeView = document.getElementById('qrCodeView');
-        this.qrCodeHeader = document.getElementById('qrCodeHeader');
-        this.qrCode = document.getElementById('qrCode');
         this.listView = document.getElementById('listView');
         this.listViewHeader = document.getElementById('listViewHeader');
         this.listViewContent = document.getElementById('listViewContent');
@@ -146,10 +186,12 @@ class EquipmentController {
         this.itemNameSelect.addEventListener('change', () => this.toggleCustomItemField());
         this.addItemBtn.addEventListener('click', () => this.addItem());
         
-        // Sharing options
+        // Export options
         this.viewListBtn.addEventListener('click', () => this.showListView());
-        this.showQRBtn.addEventListener('click', () => this.showQRCode());
-        this.downloadBtn.addEventListener('click', () => this.downloadList());
+        this.downloadTextBtn.addEventListener('click', () => this.downloadText());
+        this.downloadCSVBtn.addEventListener('click', () => this.downloadCSV());
+        this.downloadJSONBtn.addEventListener('click', () => this.downloadJSON());
+        this.printBtn.addEventListener('click', () => this.printList());
     }
     
     refreshUI() {
@@ -202,7 +244,7 @@ class EquipmentController {
         if (!activeList) {
             this.addItemForm.classList.add('hidden');
             this.equipmentList.classList.add('hidden');
-            this.sharingOptions.classList.add('hidden');
+            this.exportOptions.classList.add('hidden');
             return;
         }
         
@@ -217,10 +259,9 @@ class EquipmentController {
         // Render items table
         this.renderItemsTable(activeList);
         
-        // Update sharing options
-        this.sharingOptions.classList.remove('hidden');
+        // Update export options
+        this.exportOptions.classList.remove('hidden');
         this.listPreview.textContent = this.manager.generateListContent();
-        this.qrCodeHeader.textContent = `QR Code for ${activeList.name}`;
         this.listViewHeader.textContent = `${activeList.name}'s Cricket Kit`;
     }
     
@@ -321,8 +362,7 @@ class EquipmentController {
     }
     
     showListView() {
-        // Hide QR code view and show list view
-        this.qrCodeView.classList.add('hidden');
+        // Show list view, hide preview
         this.listView.classList.remove('hidden');
         this.previewSection.classList.add('hidden');
         
@@ -330,25 +370,46 @@ class EquipmentController {
         this.listViewContent.textContent = this.manager.generateListContent();
     }
     
-    showQRCode() {
-        // Hide list view and show QR code view
-        this.listView.classList.add('hidden');
-        this.qrCodeView.classList.remove('hidden');
-        this.previewSection.classList.add('hidden');
-        
-        // Generate QR code
-        this.generateQRCode(this.manager.generateListContent());
-    }
-    
-    downloadList() {
+    downloadText() {
         const activeList = this.manager.getActiveList();
         if (!activeList || !activeList.items || activeList.items.length === 0) return;
         
         const content = this.manager.generateListContent();
         const filename = `${activeList.name}_cricket_kit.txt`;
         
+        this.downloadFile(content, filename, 'text/plain;charset=utf-8');
+        this.showDownloadFeedback(this.downloadTextBtn);
+    }
+    
+    downloadCSV() {
+        const activeList = this.manager.getActiveList();
+        if (!activeList || !activeList.items || activeList.items.length === 0) return;
+        
+        const content = this.manager.generateCSV();
+        const filename = `${activeList.name}_cricket_kit.csv`;
+        
+        this.downloadFile(content, filename, 'text/csv;charset=utf-8');
+        this.showDownloadFeedback(this.downloadCSVBtn);
+    }
+    
+    downloadJSON() {
+        const activeList = this.manager.getActiveList();
+        if (!activeList || !activeList.items || activeList.items.length === 0) return;
+        
+        const content = this.manager.generateJSON();
+        const filename = `${activeList.name}_cricket_kit.json`;
+        
+        this.downloadFile(content, filename, 'application/json;charset=utf-8');
+        this.showDownloadFeedback(this.downloadJSONBtn);
+    }
+    
+    printList() {
+        window.print();
+    }
+    
+    downloadFile(content, filename, type) {
         // Create blob and download
-        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const blob = new Blob([content], { type });
         
         // Create temporary link and trigger download
         const a = document.createElement('a');
@@ -363,96 +424,15 @@ class EquipmentController {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }, 100);
-        
-        // Show feedback
-        const originalText = this.downloadBtn.textContent;
-        this.downloadBtn.textContent = 'Downloaded!';
-        setTimeout(() => {
-            this.downloadBtn.textContent = originalText;
-        }, 2000);
     }
     
-    generateQRCode(text) {
-        // Get active list
-        const activeList = this.manager.getActiveList();
-        if (!activeList) return;
-        
-        // Clear previous QR code
-        this.qrCode.innerHTML = '';
-        
-        // Create a QR code-like visual
-        const scale = 10;
-        const quietZone = 2;
-        
-        // Generate a deterministic seed based on name and content
-        const nameHash = Array.from(activeList.name).reduce((acc, char) => 
-            ((acc << 5) - acc) + char.charCodeAt(0), 0);
-        
-        const contentHash = Array.from(text).reduce((acc, char) => 
-            ((acc << 5) - acc) + char.charCodeAt(0), 0);
-        
-        let seed = Math.abs(nameHash * 31 + contentHash);
-        
-        // Function to generate random but deterministic values
-        const random = (max) => {
-            seed = (seed * 9301 + 49297) % 233280;
-            return Math.floor((seed / 233280) * max);
-        };
-        
-        // Create a grid for the QR code
-        const grid = [];
-        for (let y = 0; y < scale; y++) {
-            const row = [];
-            for (let x = 0; x < scale; x++) {
-                // QR code position markers in corners
-                if ((x < 3 && y < 3) || 
-                    (x < 3 && y >= scale - 3) || 
-                    (x >= scale - 3 && y < 3)) {
-                    row.push(1);
-                } else if (x === 6 || y === 6) {
-                    // Timing pattern
-                    row.push(x % 2 === 0 ? 1 : 0);
-                } else {
-                    // Random data for visual effect
-                    row.push(random(2));
-                }
-            }
-            grid.push(row);
-        }
-        
-        // Create QR code container
-        const qrContainer = document.createElement('div');
-        qrContainer.style.display = 'grid';
-        qrContainer.style.gridTemplateColumns = `repeat(${scale + quietZone * 2}, 1fr)`;
-        qrContainer.style.gap = '0';
-        qrContainer.style.width = '100%';
-        qrContainer.style.height = '100%';
-        
-        // Add cells to QR code
-        for (let y = 0; y < scale + quietZone * 2; y++) {
-            for (let x = 0; x < scale + quietZone * 2; x++) {
-                const cell = document.createElement('div');
-                
-                // Check if in quiet zone
-                const qrX = x - quietZone;
-                const qrY = y - quietZone;
-                
-                if (qrX < 0 || qrX >= scale || qrY < 0 || qrY >= scale) {
-                    // Quiet zone - white
-                    cell.style.backgroundColor = 'white';
-                } else {
-                    // QR code cells
-                    cell.style.backgroundColor = grid[qrY][qrX] ? 'black' : 'white';
-                }
-                
-                cell.style.width = '100%';
-                cell.style.height = '100%';
-                qrContainer.appendChild(cell);
-            }
-        }
-        
-        // Add QR code to container
-        this.qrCode.appendChild(qrContainer);
+    showDownloadFeedback(button) {
+        // Show feedback
+        const originalText = button.textContent;
+        button.textContent = 'Downloaded!';
+        setTimeout(() => {
+            button.textContent = originalText;
+        }, 2000);
     }
 }
 

@@ -111,14 +111,14 @@ input:focus, select:focus {
     background-color: #c0392b;
 }
 
-.button-group {
+.export-buttons {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     margin-bottom: 15px;
 }
 
-.button-group .success-btn {
+.export-buttons button:last-child {
     grid-column: span 2;
 }
 
@@ -240,17 +240,23 @@ pre {
     font-size: 0.9rem;
 }
 
-.sub-note {
-    margin-top: 5px;
-    color: #7f8c8d;
-    font-size: 0.8rem;
-}
-
-.qr-code-container {
-    width: 200px;
-    height: 200px;
-    margin: 20px auto;
-    background-color: white;
-    padding: 10px;
-    border: 1px solid #ddd;
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    body {
+        background-color: white;
+        padding: 0;
+    }
+    
+    .container {
+        max-width: 100%;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+    }
 }

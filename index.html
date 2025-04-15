@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Equipment Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Cricket Equipment Lists</h1>
+        
+        <!-- Create New List Form -->
+        <div class="card">
+            <h2>Create New List</h2>
+            <div class="form-group">
+                <label for="personName">Name:</label>
+                <input type="text" id="personName" placeholder="Enter person's name">
+            </div>
+            <button id="createListBtn" class="btn primary-btn">Create List</button>
+        </div>
+        
+        <!-- List Selection Tabs -->
+        <div id="listTabs" class="tabs-container"></div>
+        
+        <!-- Add Items Form -->
+        <div id="addItemForm" class="card hidden">
+            <h2 id="addItemHeader">Add New Item</h2>
+            <div class="form-group">
+                <label for="itemName">Item Name:</label>
+                <select id="itemName">
+                    <option value="">Select an item</option>
+                    <option value="Bat">Bat</option>
+                    <option value="Helmet">Helmet</option>
+                    <option value="Batting Pads">Batting Pads</option>
+                    <option value="Gloves">Gloves</option>
+                    <option value="Thigh Guard">Thigh Guard</option>
+                    <option value="Elbow Guard">Elbow Guard</option>
+                    <option value="Abdominal Guard">Abdominal Guard</option>
+                    <option value="Chest Guard">Chest Guard</option>
+                    <option value="Clad">Clad</option>
+                    <option value="Kit Bag">Kit Bag</option>
+                    <option value="custom">Custom Item...</option>
+                </select>
+            </div>
+            
+            <div id="customItemField" class="form-group hidden">
+                <label for="customItemName">Custom Item Name:</label>
+                <input type="text" id="customItemName" placeholder="Enter custom item name">
+            </div>
+            
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" min="1" value="1">
+            </div>
+            
+            <div class="form-group">
+                <label for="size">Size:</label>
+                <select id="size">
+                    <option value="">Select a size</option>
+                    <option value="4">Size 4</option>
+                    <option value="5">Size 5</option>
+                    <option value="6">Size 6</option>
+                    <option value="S">Small</option>
+                    <option value="M">Medium</option>
+                    <option value="L">Large</option>
+                    <option value="XL">Extra Large</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="brand">Brand:</label>
+                <input type="text" id="brand" placeholder="Enter brand name">
+            </div>
+            
+            <div class="form-group">
+                <label>Type:</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="itemType" value="Youth" checked> Youth
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="itemType" value="Adult"> Adult
+                    </label>
+                </div>
+            </div>
+            
+            <button id="addItemBtn" class="btn primary-btn">Add Item</button>
+        </div>
+        
+        <!-- Equipment List Display -->
+        <div id="equipmentList" class="card hidden">
+            <h2 id="equipmentListHeader">Equipment</h2>
+            <div id="itemsTableContainer">
+                <table id="itemsTable">
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Type</th>
+                            <th>Size</th>
+                            <th>Brand</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsTableBody"></tbody>
+                </table>
+                <p id="noItemsMessage" class="italic">No items added yet. Add some items using the form above.</p>
+            </div>
+            <div id="totalItems" class="summary hidden">
+                <p>Total Items: <span id="itemCount">0</span></p>
+            </div>
+        </div>
+        
+        <!-- Sharing Options -->
+        <div id="sharingOptions" class="card hidden">
+            <h2>Share List</h2>
+            <div class="button-group">
+                <button id="viewListBtn" class="btn secondary-btn">View List</button>
+                <button id="showQRBtn" class="btn secondary-btn">Show QR Code</button>
+                <button id="downloadBtn" class="btn success-btn">Download List</button>
+            </div>
+            
+            <!-- Preview Section -->
+            <div id="previewSection" class="preview-container">
+                <h3>Preview:</h3>
+                <pre id="listPreview"></pre>
+            </div>
+            
+            <!-- QR Code View -->
+            <div id="qrCodeView" class="sharing-view hidden">
+                <h3 id="qrCodeHeader">QR Code</h3>
+                <div id="qrCode" class="qr-code-container"></div>
+                <p class="note">This QR code contains the cricket equipment list.</p>
+                <p class="sub-note">Scan this code with your device's camera or QR code reader app.</p>
+            </div>
+            
+            <!-- List View -->
+            <div id="listView" class="sharing-view hidden">
+                <h3 id="listViewHeader">Cricket Kit</h3>
+                <pre id="listViewContent"></pre>
+                <p class="note">To save this content: Select All (Ctrl+A or Cmd+A) then Copy (Ctrl+C or Cmd+C)</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
